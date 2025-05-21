@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur DIY E-liquide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.5em;
+        }
+        .form-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        label {
+            min-width: 180px;
+            font-weight: bold;
+        }
+        input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+        .result h3 {
+            margin-top: 0;
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.3em;
+            }
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            label {
+                min-width: auto;
+                width: 100%;
+            }
+            input {
+                width: 100%;
+                max-width: 120px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculateur DIY E-liquide</h1>
+    <form id="calculator">
+        <div class="form-group">
+            <label for="volume">Volume final (ml) :</label>
+            <input type="number" id="volume" min="1" step="1" value="30" required>
+        </div>
+        <div class="form-group">
+            <label for="arome">Pourcentage d'arôme (%) :</label>
+            <input type="number" id="arome" min="0" max="100" step="0.1" value="10" required>
+        </div>
+        <div class="form-group">
+            <label for="nicotine">Taux de nicotine souhaité (mg/ml) :</label>
+            <input type="number" id="nicotine" min="0" step="0.1" value="3" required>
+        </div>
+        <div class="form-group">
+            <label for="nicotine-strength">Taux de nicotine du booster (mg/ml) :</label>
+            <input type="number" id="nicotine-strength" min="0" step="1" value="20" required>
+        </div>
+        <div class="form-group">
+            <label for="gouttes">Nombre de gouttes par ml :</label>
+            <input type="number" id="gouttes" min="1" step="1" value="30" required>
+        </div>
+    </form>
+    <div id="result" class="result">
+        <h3>Résultat du calcul</h3>
+        <p id="ml-arome"></p>
+        <p id="ml-nicotine"></p>
+        <p id="ml-base"></p>
+    </div>
+    <script>
+        function calculer() {
+            const volume = parseFloat(document.getElementById('volume').value) || 0;
+            const arome = parseFloat(document.getElementById('arome').value) || 0;
+            const nicotine = parseFloat(document.getElementById('nicotine').value) || 0;
+            const nicotineStrength = parseFloat(document.getElementById('nicotine-strength').value) || 0;
+            const gouttes = parseFloat(document.getElementById('gouttes').value) || 0;
+
+            // Calcul des quantités en ml
+            const mlArome = volume * arome / 100;
+            const mlNicotine = (nicotine * volume) / nicotineStrength;
+            const mlBase = Math.max(0, volume - mlArome - mlNicotine); // Évite les valeurs négatives
+
+            // Calcul des gouttes
+            const gouttesArome = Math.round(mlArome * gouttes);
+            const gouttesNicotine = Math.round(mlNicotine * gouttes);
+            const gouttesBase = Math.round(mlBase * gouttes);
+
+            // Affichage des résultats
+            document.getElementById('ml-arome').textContent = `Arôme : ${mlArome.toFixed(1)} ml (ou ${gouttesArome} gouttes)`;
+            document.getElementById('ml-nicotine').textContent = `Booster nicotine : ${mlNicotine.toFixed(1)} ml (ou ${gouttesNicotine} gouttes)`;
+            document.getElementById('ml-base').textContent = `Base PG/VG : ${mlBase.toFixed(1)} ml (ou ${gouttesBase} gouttes)`;
+        }
+
+        // Écouteurs d'événements pour chaque champ
+        document.querySelectorAll('#calculator input').forEach(input => {
+            input.addEventListener('input', calculer);
+        });
+
+        // Calcul initial
+        calculer();
+    </script>
+</body>
+</html>
